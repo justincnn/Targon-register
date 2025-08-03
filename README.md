@@ -48,7 +48,7 @@
 
 1.  **克隆或上传项目：**
     ```bash
-    git clone [您的 GitHub 仓库 URL]
+    git clone https://github.com/justincnn/Targon-register
     cd [项目目录]
     ```
 
