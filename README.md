@@ -31,6 +31,24 @@
     在运行项目之前，您需要设置以下环境变量：
 
     ```bash
+### 如何获取 Cloudflare 凭据
+
+1.  **`CF_ACCOUNT_ID` (账户 ID)**:
+    *   登录到您的 Cloudflare 仪表板。
+    *   在主页右侧，您会看到您的账户 ID。点击“点击复制”即可。
+
+2.  **`CF_ZONE_ID` (区域 ID)**:
+    *   在 Cloudflare 仪表板上，选择您要使用的域名。
+    *   在域名的“概述”页面，向下滚动，您会在右侧找到“区域 ID”。点击“点击复制”即可。
+
+3.  **`CF_API_TOKEN` (API 令牌)**:
+    *   在 Cloudflare 仪表板上，点击右上角您的个人资料图标，然后选择“我的个人资料”。
+    *   在左侧菜单中，选择“API 令牌”。
+    *   点击“创建令牌”。
+    *   选择一个模板（例如，“编辑区域 DNS”），或者创建一个具有所需权限的自定义令牌。对于邮件路由，您可能需要“区域.区域”和“区域.DNS”的编辑权限。
+    *   在“区域资源”部分，选择您要应用此令牌的特定区域。
+    *   点击“继续以显示摘要”，然后点击“创建令牌”。
+    *   **重要提示：** Cloudflare 只会显示一次 API 令牌。请务必在关闭页面前复制并安全地保存它。
     export TARGON_PASSWORD="your_strong_password"
     export CF_API_TOKEN="your_cloudflare_api_token"
     export CF_ZONE_ID="your_cloudflare_zone_id"
