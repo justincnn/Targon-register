@@ -58,10 +58,24 @@ class TargonCloudflare:
             exit(1)
 
     def generate_password(self):
-        """生成随机密码"""
+        """生成符合复杂性要求的随机密码"""
         length = 12
-        chars = string.ascii_letters + string.digits + "!@#$%^&*"
-        return ''.join(random.choice(chars) for _ in range(length))
+        # 确保密码包含不同类型的字符
+        password_chars = [
+            random.choice(string.ascii_uppercase),
+            random.choice(string.ascii_lowercase),
+            random.choice(string.digits),
+            random.choice("!@#$%^*") # 移除'&'以防万一
+        ]
+        
+        # 填充剩余长度
+        all_chars = string.ascii_letters + string.digits + "!@#$%^*"
+        for _ in range(length - len(password_chars)):
+            password_chars.append(random.choice(all_chars))
+            
+        # 打乱顺序
+        random.shuffle(password_chars)
+        return "".join(password_chars)
 
     def get_email_address(self):
         """生成基于域名的随机邮箱地址"""
@@ -103,6 +117,13 @@ class TargonCloudflare:
                 return True
             else:
                 print(f"❌ 注册失败: {response.status_code}")
+                try:
+                    # 尝试打印JSON响应以获取更多错误信息
+                    error_details = response.json()
+                    print(f"ℹ️  错误详情: {json.dumps(error_details, indent=2, ensure_ascii=False)}")
+                except json.JSONDecodeError:
+                    # 如果响应不是JSON格式，则打印原始文本
+                    print(f"ℹ️  原始响应: {response.text}")
                 return False
                 
         except Exception as e:
