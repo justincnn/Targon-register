@@ -2,7 +2,7 @@ import os
 import uuid
 import time
 from loguru import logger
-from DrissionPage import ChromiumPage
+from DrissionPage import ChromiumPage, ChromiumOptions
 from targon_register import TargonRegistrar
 from cloudflare_email import CloudflareEmail
 
@@ -11,26 +11,36 @@ def solve_turnstile_with_browser():
     使用 DrissionPage 尝试解决 Cloudflare Turnstile
     """
     try:
-        page = ChromiumPage()
+        browser_path = os.getenv("BROWSER_PATH")
+        co = ChromiumOptions()
+        if browser_path:
+            co.set_browser_path(browser_path)
+        
+        page = ChromiumPage(addr_or_opts=co)
         page.get('https://targon.com/auth/sign-up')
         
         # 等待 Turnstile 加载并获取令牌
         # 这可能需要一些时间，具体取决于网络和 Cloudflare 的响应
-        time.sleep(10) # 等待 10 秒
+        logger.info("等待15秒让 Turnstile 加载...")
+        time.sleep(15)
 
         # 尝试从页面中提取令牌
         # 注意：这假设令牌存在于一个具有特定名称或ID的隐藏输入字段中
-        # 这可能需要根据 Targon 网站的实际情况进行调整
-        token_element = page.ele('input[name="cf-turnstile-response"]')
+        token_element = page.ele('input[name="cf-turnstile-response"]', timeout=5)
         if token_element:
             token = token_element.value
-            logger.info("成功获取 Turnstile 令牌。")
-            page.quit()
-            return token
+            if token:
+                logger.info("成功获取 Turnstile 令牌。")
+                page.quit()
+                return token
+            else:
+                logger.error("Turnstile 令牌为空。")
         else:
             logger.error("无法找到 Turnstile 令牌元素。")
-            page.quit()
-            return None
+        
+        logger.error("获取 Turnstile 令牌失败。")
+        page.quit()
+        return None
 
     except Exception as e:
         logger.error(f"使用浏览器解决 Turnstile 时出错: {e}")

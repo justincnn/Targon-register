@@ -8,6 +8,17 @@
 
 此项目使用浏览器自动化来尝试绕过 Cloudflare Turnstile。**这种方法的成功率无法保证**，因为 Cloudflare 会不断更新其检测技术。如果此方法失败，您可能需要考虑使用付费的 CAPTCHA 解决服务。
 
+## 在 Ubuntu VPS 上运行
+
+要在 Ubuntu VPS 上成功运行此项目，您需要安装 Chromium 浏览器：
+
+```bash
+sudo apt-get update
+sudo apt-get install -y chromium-browser
+```
+
+安装后，您可能需要设置 `BROWSER_PATH` 环境变量，指向 Chromium 的可执行文件路径（通常是 `/usr/bin/chromium-browser`）。
+
 ## 设置
 
 1.  **克隆项目**
@@ -40,6 +51,7 @@
     export CF_ZONE_ID="your_cloudflare_zone_id"
     export CF_ACCOUNT_ID="your_cloudflare_account_id"
     export CF_DOMAIN="your_domain.com"
+    export BROWSER_PATH="/usr/bin/chromium-browser"  # (可选) 如果浏览器不在标准路径
     ```
 
     -   `TARGON_PASSWORD`: 您要用于账户的密码。
@@ -47,6 +59,7 @@
     -   `CF_ZONE_ID`: 您的 Cloudflare 区域 ID。
     -   `CF_ACCOUNT_ID`: 您的 Cloudflare 帐户 ID。
     -   `CF_DOMAIN`: 您要用于邮件路由的域名。
+    -   `BROWSER_PATH`: (可选) 指向您的浏览器可执行文件的路径。
 
 ### 如何获取 Cloudflare 凭据
 
