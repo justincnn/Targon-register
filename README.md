@@ -29,8 +29,14 @@
 4.  **设置环境变量**
 
     在运行项目之前，您需要设置以下环境变量：
-
     ```bash
+    export TARGON_PASSWORD="your_strong_password"
+    export CF_API_TOKEN="your_cloudflare_api_token"
+    export CF_ZONE_ID="your_cloudflare_zone_id"
+    export CF_ACCOUNT_ID="your_cloudflare_account_id"
+    export CF_DOMAIN="your_domain.com"
+   
+    
 ### 如何获取 Cloudflare 凭据
 
 1.  **`CF_ACCOUNT_ID` (账户 ID)**:
