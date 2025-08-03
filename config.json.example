@@ -1,0 +1,6 @@
+{
+  "domain": "your-domain.com",
+  "imap_server": "imap.gmail.com",
+  "imap_user": "your-real-email@gmail.com",
+  "imap_password": "your-gmail-app-password"
+}
