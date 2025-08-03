@@ -1,15 +1,36 @@
 import os
 import uuid
 from loguru import logger
+from twocaptcha import TwoCaptcha
 from targon_register import TargonRegistrar
 from cloudflare_email import CloudflareEmail
+
+def solve_turnstile(api_key):
+    """
+    使用 2Captcha 解决 Cloudflare Turnstile
+    """
+    try:
+        solver = TwoCaptcha(api_key)
+        result = solver.turnstile(
+            sitekey='0x4AAAAAAARdAuciFAr-v3k9',  # Targon 网站的 Site Key
+            url='https://targon.com/auth/sign-up',
+        )
+        return result['code']
+    except Exception as e:
+        logger.error(f"解决 Turnstile 时出错: {e}")
+        return None
 
 def main():
     logger.add("logs/app.log", rotation="10 MB", retention="7 days", level="INFO")
 
+    # 2Captcha API 密钥
+    twocaptcha_api_key = os.getenv("TWOCAPTCHA_API_KEY")
+    if not twocaptcha_api_key:
+        logger.error("请设置 TWOCAPTCHA_API_KEY 环境变量。")
+        return
+
     # Targon 凭据
     password = os.getenv("TARGON_PASSWORD", "your_strong_password")
-    turnstile_token = os.getenv("TARGON_TURNSTILE_TOKEN")
 
     # Cloudflare 凭据
     cf_api_token = os.getenv("CF_API_TOKEN")
@@ -17,11 +38,16 @@ def main():
     cf_account_id = os.getenv("CF_ACCOUNT_ID")
     cf_domain = os.getenv("CF_DOMAIN")
 
-    if not all([cf_api_token, cf_zone_id, cf_account_id, cf_domain, turnstile_token]):
-        logger.error("请设置 CF_API_TOKEN, CF_ZONE_ID, CF_ACCOUNT_ID, CF_DOMAIN, 和 TARGON_TURNSTILE_TOKEN 环境变量。")
+    if not all([cf_api_token, cf_zone_id, cf_account_id, cf_domain]):
+        logger.error("请设置 CF_API_TOKEN, CF_ZONE_ID, CF_ACCOUNT_ID, 和 CF_DOMAIN 环境变量。")
         return
 
-    # 1. 创建 CloudflareEmail 实例
+    # 1. 解决 Turnstile
+    turnstile_token = solve_turnstile(twocaptcha_api_key)
+    if not turnstile_token:
+        return
+
+    # 2. 创建 CloudflareEmail 实例
     cf_email = CloudflareEmail(
         api_token=cf_api_token,
         zone_id=cf_zone_id,
@@ -29,25 +55,25 @@ def main():
         domain=cf_domain
     )
 
-    # 2. 创建临时邮箱
+    # 3. 创建临时邮箱
     email_prefix = str(uuid.uuid4())[:8]
     temp_email = cf_email.create_temp_email(email_prefix)
 
-    # 3. 注册 Targon 账户
+    # 4. 注册 Targon 账户
     registrar = TargonRegistrar()
     if registrar.register_account(temp_email, password, turnstile_token):
-        # 4. 获取激活链接 (需要您自己实现)
+        # 5. 获取激活链接 (需要您自己实现)
         activation_link = cf_email.get_activation_link(temp_email)
 
         if activation_link:
-            # 5. 激活邮箱
+            # 6. 激活邮箱
             if registrar.activate_email(activation_link):
-                # 6. 创建 2FA
+                # 7. 创建 2FA
                 two_fa_data = registrar.create_2fa()
                 if two_fa_data:
-                    # 7. 启用 2FA
+                    # 8. 启用 2FA
                     if registrar.enable_2fa(two_fa_data['two_factor_secret'], two_fa_data['manual_code']):
-                        # 8. 获取 API 密钥
+                        # 9. 获取 API 密钥
                         registrar.get_api_keys(temp_email)
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@
 
 这是一个用于自动注册 Targon 账户、激活邮箱、设置和启用 2FA 并获取 API 密钥的 Python 项目。
 
-该项目利用 Cloudflare 的邮件路由功能自动创建临时邮箱进行注册。
+该项目利用 Cloudflare 的邮件路由功能自动创建临时邮箱进行注册，并使用 2Captcha 自动解决 Cloudflare Turnstile 质询。
 
 ## 设置
 
@@ -32,7 +32,7 @@
 
     ```bash
     export TARGON_PASSWORD="your_strong_password"
-    export TARGON_TURNSTILE_TOKEN="your_turnstile_token"
+    export TWOCAPTCHA_API_KEY="your_2captcha_api_key"
     export CF_API_TOKEN="your_cloudflare_api_token"
     export CF_ZONE_ID="your_cloudflare_zone_id"
     export CF_ACCOUNT_ID="your_cloudflare_account_id"
@@ -40,7 +40,7 @@
     ```
 
     -   `TARGON_PASSWORD`: 您要用于账户的密码。
-    -   `TARGON_TURNSTILE_TOKEN`: 从 Targon 网站手动获取的 Cloudflare Turnstile 令牌。
+    -   `TWOCAPTCHA_API_KEY`: 您的 2Captcha API 密钥。
     -   `CF_API_TOKEN`: 您的 Cloudflare API 令牌。
     -   `CF_ZONE_ID`: 您的 Cloudflare 区域 ID。
     -   `CF_ACCOUNT_ID`: 您的 Cloudflare 帐户 ID。
@@ -64,15 +64,6 @@
     *   在“区域资源”部分，选择您要应用此令牌的特定区域。
     *   点击“继续以显示摘要”，然后点击“创建令牌”。
     *   **重要提示：** Cloudflare 只会显示一次 API 令牌。请务必在关闭页面前复制并安全地保存它。
-
-### 如何手动获取 `turnstileToken`
-
-1.  在浏览器中打开 Targon 注册页面：https://targon.com/auth/sign-up
-2.  打开浏览器的开发者工具（通常按 F12）。
-3.  切换到“网络”或“Network”选项卡。
-4.  在页面上填写注册信息（邮箱、密码），然后点击“注册”按钮。
-5.  在开发者工具的网络请求列表中，找到对 `account.createAccount` 的请求。
-6.  点击该请求，然后在“载荷”或“Payload”选项卡中，您会找到 `turnstileToken`。复制该值。
 
 ## 重要提示
 
