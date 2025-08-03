@@ -17,7 +17,7 @@ sudo apt-get update
 sudo apt-get install -y chromium-browser
 ```
 
-安装后，您可能需要设置 `BROWSER_PATH` 环境变量，指向 Chromium 的可执行文件路径（通常是 `/usr/bin/chromium-browser`）。
+该项目会自动以适合服务器环境的无头模式运行浏览器。如果浏览器没有安装在标准路径下，您可能需要设置 `BROWSER_PATH` 环境变量。
 
 ## 设置
 

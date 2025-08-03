@@ -16,16 +16,18 @@ def solve_turnstile_with_browser():
         if browser_path:
             co.set_browser_path(browser_path)
         
+        # 为无头服务器环境添加参数
+        co.add_argument('--headless=new')
+        co.add_argument('--no-sandbox')
+
         page = ChromiumPage(addr_or_opts=co)
         page.get('https://targon.com/auth/sign-up')
         
         # 等待 Turnstile 加载并获取令牌
-        # 这可能需要一些时间，具体取决于网络和 Cloudflare 的响应
         logger.info("等待15秒让 Turnstile 加载...")
         time.sleep(15)
 
         # 尝试从页面中提取令牌
-        # 注意：这假设令牌存在于一个具有特定名称或ID的隐藏输入字段中
         token_element = page.ele('input[name="cf-turnstile-response"]', timeout=5)
         if token_element:
             token = token_element.value
