@@ -22,13 +22,14 @@ class TargonRegistrar:
         )
         self.session_cookie = None
     
-    def register_account(self, email, password):
+    def register_account(self, email, password, turnstile_token):
         """
         注册Targon账户
         
         Args:
             email: 邮箱地址
             password: 密码
+            turnstile_token: Cloudflare Turnstile 令牌
             
         Returns:
             bool: 注册是否成功
@@ -42,7 +43,8 @@ class TargonRegistrar:
                     "json": {
                         "email": email,
                         "password": password,
-                        "password2": password
+                        "password2": password,
+                        "turnstileToken": turnstile_token
                     }
                 }
             }

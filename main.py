@@ -9,6 +9,7 @@ def main():
 
     # Targon 凭据
     password = os.getenv("TARGON_PASSWORD", "your_strong_password")
+    turnstile_token = os.getenv("TARGON_TURNSTILE_TOKEN")
 
     # Cloudflare 凭据
     cf_api_token = os.getenv("CF_API_TOKEN")
@@ -16,8 +17,8 @@ def main():
     cf_account_id = os.getenv("CF_ACCOUNT_ID")
     cf_domain = os.getenv("CF_DOMAIN")
 
-    if not all([cf_api_token, cf_zone_id, cf_account_id, cf_domain]):
-        logger.error("请设置 CF_API_TOKEN, CF_ZONE_ID, CF_ACCOUNT_ID, 和 CF_DOMAIN 环境变量。")
+    if not all([cf_api_token, cf_zone_id, cf_account_id, cf_domain, turnstile_token]):
+        logger.error("请设置 CF_API_TOKEN, CF_ZONE_ID, CF_ACCOUNT_ID, CF_DOMAIN, 和 TARGON_TURNSTILE_TOKEN 环境变量。")
         return
 
     # 1. 创建 CloudflareEmail 实例
@@ -34,7 +35,7 @@ def main():
 
     # 3. 注册 Targon 账户
     registrar = TargonRegistrar()
-    if registrar.register_account(temp_email, password):
+    if registrar.register_account(temp_email, password, turnstile_token):
         # 4. 获取激活链接 (需要您自己实现)
         activation_link = cf_email.get_activation_link(temp_email)
 

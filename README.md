@@ -31,6 +31,7 @@
     在运行项目之前，您需要设置以下环境变量：
 
     ```bash
+-   `TARGON_TURNSTILE_TOKEN`: 从 Targon 网站手动获取的 Cloudflare Turnstile 令牌。
 ### 如何获取 Cloudflare 凭据
 
 1.  **`CF_ACCOUNT_ID` (账户 ID)**:
@@ -77,3 +78,11 @@ python main.py
 ```
 
 日志将保存在 `logs/app.log` 文件中。
+### 如何手动获取 `turnstileToken`
+
+1.  在浏览器中打开 Targon 注册页面：https://targon.com/auth/sign-up
+2.  打开浏览器的开发者工具（通常按 F12）。
+3.  切换到“网络”或“Network”选项卡。
+4.  在页面上填写注册信息（邮箱、密码），然后点击“注册”按钮。
+5.  在开发者工具的网络请求列表中，找到对 `account.createAccount` 的请求。
+6.  点击该请求，然后在“载荷”或“Payload”选项卡中，您会找到 `turnstileToken`。复制该值。
