@@ -1,33 +1,43 @@
 import os
 import uuid
+import time
 from loguru import logger
-from twocaptcha import TwoCaptcha
+from DrissionPage import ChromiumPage
 from targon_register import TargonRegistrar
 from cloudflare_email import CloudflareEmail
 
-def solve_turnstile(api_key):
+def solve_turnstile_with_browser():
     """
-    使用 2Captcha 解决 Cloudflare Turnstile
+    使用 DrissionPage 尝试解决 Cloudflare Turnstile
     """
     try:
-        solver = TwoCaptcha(api_key)
-        result = solver.turnstile(
-            sitekey='0x4AAAAAAARdAuciFAr-v3k9',  # Targon 网站的 Site Key
-            url='https://targon.com/auth/sign-up',
-        )
-        return result['code']
+        page = ChromiumPage()
+        page.get('https://targon.com/auth/sign-up')
+        
+        # 等待 Turnstile 加载并获取令牌
+        # 这可能需要一些时间，具体取决于网络和 Cloudflare 的响应
+        time.sleep(10) # 等待 10 秒
+
+        # 尝试从页面中提取令牌
+        # 注意：这假设令牌存在于一个具有特定名称或ID的隐藏输入字段中
+        # 这可能需要根据 Targon 网站的实际情况进行调整
+        token_element = page.ele('input[name="cf-turnstile-response"]')
+        if token_element:
+            token = token_element.value
+            logger.info("成功获取 Turnstile 令牌。")
+            page.quit()
+            return token
+        else:
+            logger.error("无法找到 Turnstile 令牌元素。")
+            page.quit()
+            return None
+
     except Exception as e:
-        logger.error(f"解决 Turnstile 时出错: {e}")
+        logger.error(f"使用浏览器解决 Turnstile 时出错: {e}")
         return None
 
 def main():
     logger.add("logs/app.log", rotation="10 MB", retention="7 days", level="INFO")
-
-    # 2Captcha API 密钥
-    twocaptcha_api_key = os.getenv("TWOCAPTCHA_API_KEY")
-    if not twocaptcha_api_key:
-        logger.error("请设置 TWOCAPTCHA_API_KEY 环境变量。")
-        return
 
     # Targon 凭据
     password = os.getenv("TARGON_PASSWORD", "your_strong_password")
@@ -43,7 +53,7 @@ def main():
         return
 
     # 1. 解决 Turnstile
-    turnstile_token = solve_turnstile(twocaptcha_api_key)
+    turnstile_token = solve_turnstile_with_browser()
     if not turnstile_token:
         return
 

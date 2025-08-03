@@ -2,7 +2,11 @@
 
 这是一个用于自动注册 Targon 账户、激活邮箱、设置和启用 2FA 并获取 API 密钥的 Python 项目。
 
-该项目利用 Cloudflare 的邮件路由功能自动创建临时邮箱进行注册，并使用 2Captcha 自动解决 Cloudflare Turnstile 质询。
+该项目利用 Cloudflare 的邮件路由功能自动创建临时邮箱进行注册，并使用 DrissionPage 尝试自动解决 Cloudflare Turnstile 质询。
+
+## 免责声明
+
+此项目使用浏览器自动化来尝试绕过 Cloudflare Turnstile。**这种方法的成功率无法保证**，因为 Cloudflare 会不断更新其检测技术。如果此方法失败，您可能需要考虑使用付费的 CAPTCHA 解决服务。
 
 ## 设置
 
@@ -32,7 +36,6 @@
 
     ```bash
     export TARGON_PASSWORD="your_strong_password"
-    export TWOCAPTCHA_API_KEY="your_2captcha_api_key"
     export CF_API_TOKEN="your_cloudflare_api_token"
     export CF_ZONE_ID="your_cloudflare_zone_id"
     export CF_ACCOUNT_ID="your_cloudflare_account_id"
@@ -40,7 +43,6 @@
     ```
 
     -   `TARGON_PASSWORD`: 您要用于账户的密码。
-    -   `TWOCAPTCHA_API_KEY`: 您的 2Captcha API 密钥。
     -   `CF_API_TOKEN`: 您的 Cloudflare API 令牌。
     -   `CF_ZONE_ID`: 您的 Cloudflare 区域 ID。
     -   `CF_ACCOUNT_ID`: 您的 Cloudflare 帐户 ID。
@@ -80,7 +82,3 @@ python main.py
 ```
 
 日志将保存在 `logs/app.log` 文件中。
-
-## 故障排除
-
--   **`ERROR_ZERO_BALANCE`**: 如果您在运行脚本时看到此错误，则表示您的 2Captcha 账户余额不足。请访问 2Captcha 网站为您的账户充值。

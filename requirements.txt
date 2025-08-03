@@ -1,4 +1,4 @@
 httpx
 pyotp
 loguru
-2captcha-python
+DrissionPage
