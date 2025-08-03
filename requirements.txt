@@ -1,4 +1,4 @@
 httpx
 pyotp
 loguru
-twocaptcha-python
+2captcha-python
