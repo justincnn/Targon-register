@@ -80,3 +80,7 @@ python main.py
 ```
 
 日志将保存在 `logs/app.log` 文件中。
+
+## 故障排除
+
+-   **`ERROR_ZERO_BALANCE`**: 如果您在运行脚本时看到此错误，则表示您的 2Captcha 账户余额不足。请访问 2Captcha 网站为您的账户充值。
